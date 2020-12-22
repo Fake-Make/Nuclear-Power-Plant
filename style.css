@@ -6,15 +6,36 @@ body {
 	width: 100%;
 	justify-content: space-around;
 	flex-wrap: wrap;
+	margin: 0;
 }
 
 body section {
 	width: auto;
+	padding: 5px;
 }
 
-.control,
+.control {
+	width: 20%;
+}
+
 .info {
-	width: 25%;
+	width: 35%;
+}
+
+.info table {
+	border-collapse: collapse;
+}
+
+.info table th,
+.info table td {
+	border: 1px solid #eee;
+	padding: 3px;
+	text-align: center;
+	background-color: #444;
+}
+
+.info table th {
+	background-color: #222;
 }
 
 section.plot {
