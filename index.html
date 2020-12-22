@@ -3,12 +3,86 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<script src="jquery.min.js"></script>
+	<script src="knockout.min.js"></script>
+	<script src="komapping.min.js"></script>
+	<title>Атомная станция</title>
 </head>
 <body>
-	<label>
-		Общая мощность
-		<input type="range" name="" id="" min="0" max="4000" step="1">
-	</label>
+	<section class="control">
+		<h2>Панель управления</h2>
+		<div>
+			<label>
+				Общая мощность:
+				<input type="number" min="0" max="4000" step="1" name="power-common" value="2000">
+			</label>
+			<br>
+			<label>
+				0<input type="range" min="0" max="4000" step="1" name="power-common" value="2000">4000
+			</label>
+		</div>
+	
+		<br>
+		<br>
+		
+		<!-- ko foreach: $root -->
+		<div>
+			<label>
+				<input type="checkbox" data-bind="checked: !$data.auto()">
+				<span data-bind="text: 'Реактор #' + $index() +':'"></span>
+				<input type="number" min="0" max="1000" step="1"
+					data-bind="value: $data.power, name: 'power-reactor-' + $index()">
+			</label>
+			<br>
+			<label>
+				0<input type="range" min="0" max="1000" step="1"
+					data-bind="value: $data.power, name: 'power-reactor-' + $index()">1000
+			</label>
+		</div>
+		<!-- /ko -->
+	</section>
+	<section class="info">
+		<h2>Информация</h2>
+		<div>
+			<h3>Общая информация</h3>
+			<label>
+				Мощность (МВТ):
+				<span>1</span>
+			</label>
+			<br>
+			<label>
+				Среднее давление (атм):
+				<span>2</span>
+			</label>
+			<br>
+			<label>
+				Средняя температура (°C):
+				<span>3</span>
+			</label>
+		</div>
+		<!-- ko foreach: $root -->
+		<div>
+			<h3 data-bind="text: 'Реактор #' + $index()"></h3>
+			<label>
+				Мощность:
+				<span data-bind="text: $data.power() + ' МВт'"></span>
+			</label>
+			<br>
+			<label>
+				Среднее давление:
+				<span data-bind="text: $data.pressure().toFixed(2) + ' атм'"></span>
+			</label>
+			<br>
+			<label>
+				Средняя температура:
+				<span data-bind="text: $data.temperature().toFixed(2) + '°C'"></span>
+			</label>
+		</div>
+		<!-- /ko -->
+	</section>
+	<section class="plot">
+		<h2>График</h2>
+	</section>
+	<script src="script.js"></script>
 </body>
 </html>
