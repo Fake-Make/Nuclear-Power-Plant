@@ -54,42 +54,26 @@
 	</section>
 	<section class="info">
 		<h2>Информация</h2>
-		<div>
-			<h3>Общая информация</h3>
-			<label>
-				Мощность:
-				<span data-bind="text: common.power() + ' МВт'"></span>
-			</label>
-			<br>
-			<label>
-				Среднее давление:
-				<span data-bind="text: common.pressure().toFixed(2) + ' атм'"></span>
-			</label>
-			<br>
-			<label>
-				Средняя температура:
-				<span data-bind="text: common.temperature().toFixed(2) + '°C'"></span>
-			</label>
-		</div>
-		<!-- ko foreach: $root.reactors -->
-		<div>
-			<h3 data-bind="text: 'Реактор #' + ($index() + 1)"></h3>
-			<label>
-				Мощность:
-				<span data-bind="text: $data.power() + ' МВт'"></span>
-			</label>
-			<br>
-			<label>
-				Среднее давление:
-				<span data-bind="text: $data.pressure().toFixed(2) + ' атм'"></span>
-			</label>
-			<br>
-			<label>
-				Средняя температура:
-				<span data-bind="text: $data.temperature().toFixed(2) + '°C'"></span>
-			</label>
-		</div>
-		<!-- /ko -->
+		<table>
+			<thead>
+				<tr>
+					<th>Реактор</th>
+					<th>Мощность</th>
+					<th>Среднее давление</th>
+					<th>Средняя температура</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- ko foreach: info -->
+				<tr>
+					<td data-bind="text: index() ? index() : 'Станция'"></td>
+					<td data-bind="text: power() + ' МВт'"></td>
+					<td data-bind="text: pressure().toFixed(2) + ' атм'"></td>
+					<td data-bind="text: temperature().toFixed(2) + '°C'"></td>
+				</tr>
+				<!-- /ko -->
+			</tbody>
+		</table>
 	</section>
 	<script src="script.js"></script>
 </body>
