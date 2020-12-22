@@ -22,20 +22,42 @@ function getTemperature(power, maxPower = 1000) {
 	return 100 + powerPart + error;
 }
 
-const reactors = [1, 2, 3, 4].map(reactor => {
-	return {
-		index: reactor,
-		power: 500,
-		auto: true,
-		pressure: ko.computed(() => getPressure(500)),
-		temperature: ko.computed(() => getTemperature(500))
+class Station {
+	constructor() {
+		const reactors = [1, 2, 3, 4].map(reactor => {
+			return {
+				index: ko.observable(reactor),
+				power: ko.observable(500),
+				auto: ko.observable(true),
+				pressure: getPressure(500),
+				temperature: getTemperature(500)
+			}
+		});
+
+		reactors.forEach(reactor => {
+			reactor.pressure = ko.computed(() => getPressure(reactor.power()));
+			reactor.temperature = ko.computed(() => getTemperature(reactor.power()));
+		})
+
+		this.reactors = reactors;
+		this.common = {
+			power: ko.observable(2000),
+			pressure: ko.computed(() => {
+				return reactors
+					.map(reactor => reactor.pressure())
+					.reduce((cur, acc) => acc += cur)
+					/ reactors.length;
+			}),
+			temperature: ko.computed(() => {
+				return reactors
+					.map(reactor => reactor.temperature())
+					.reduce((cur, acc) => acc += cur)
+					/ reactors.length;
+			})
+		};
 	}
-});
+}
 
 (function() {
-	// $('input').on('input', function() {
-	// 	updateValue(this);
-	// });
-
-	ko.applyBindings(ko.mapping.fromJS(reactors));
+	ko.applyBindings(ko.mapping.fromJS(new Station()));
 })();

@@ -14,22 +14,24 @@
 		<div>
 			<label>
 				Общая мощность:
-				<input type="number" min="0" max="4000" step="1" name="power-common" value="2000">
+				<input type="number" min="0" max="4000" step="1" name="power-common"
+					data-bind="value: common.power">
 			</label>
 			<br>
 			<label>
-				0<input type="range" min="0" max="4000" step="1" name="power-common" value="2000">4000
+				0<input type="range" min="0" max="4000" step="1" name="power-common"
+					data-bind="value: common.power">4000
 			</label>
 		</div>
 	
 		<br>
 		<br>
 		
-		<!-- ko foreach: $root -->
+		<!-- ko foreach: $root.reactors -->
 		<div>
 			<label>
 				<input type="checkbox" data-bind="checked: !$data.auto()">
-				<span data-bind="text: 'Реактор #' + $index() +':'"></span>
+				<span data-bind="text: 'Реактор #' + ($index() + 1) +':'"></span>
 				<input type="number" min="0" max="1000" step="1"
 					data-bind="value: $data.power, name: 'power-reactor-' + $index()">
 			</label>
@@ -46,23 +48,23 @@
 		<div>
 			<h3>Общая информация</h3>
 			<label>
-				Мощность (МВТ):
-				<span>1</span>
+				Мощность:
+				<span data-bind="text: common.power() + ' МВт'"></span>
 			</label>
 			<br>
 			<label>
-				Среднее давление (атм):
-				<span>2</span>
+				Среднее давление:
+				<span data-bind="text: common.pressure().toFixed(2) + ' атм'"></span>
 			</label>
 			<br>
 			<label>
-				Средняя температура (°C):
-				<span>3</span>
+				Средняя температура:
+				<span data-bind="text: common.temperature().toFixed(2) + '°C'"></span>
 			</label>
 		</div>
-		<!-- ko foreach: $root -->
+		<!-- ko foreach: $root.reactors -->
 		<div>
-			<h3 data-bind="text: 'Реактор #' + $index()"></h3>
+			<h3 data-bind="text: 'Реактор #' + ($index() + 1)"></h3>
 			<label>
 				Мощность:
 				<span data-bind="text: $data.power() + ' МВт'"></span>
