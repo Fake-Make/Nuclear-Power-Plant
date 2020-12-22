@@ -1,40 +1,46 @@
 class Station {
 	constructor() {
-		const reactors = [1, 2, 3, 4].map(reactor => {
-			return {
-				index: ko.observable(reactor),
-				power: ko.observable(500),
-				auto: ko.observable(true),
-				pressure: this._getPressure(500),
-				temperature: this._getTemperature(500)
+		const reactors = [1, 2, 3, 4]
+			.map(_ => {
+				return {
+					power: ko.observable(500),
+					auto: ko.observable(true)
+				}
+			});
+
+		this.control = {
+			reactors: reactors,
+			common: {
+				power: ko.observable(2000)
 			}
-		});
-
-		reactors.forEach(reactor => {
-			reactor.pressure = ko.computed(() => this._getPressure(reactor.power()));
-			reactor.temperature = ko.computed(() => this._getTemperature(reactor.power()));
-		})
-
-		this.reactors = reactors;
-		this.common = {
-			power: ko.observable(2000),
-			pressure: ko.computed(() => {
-				return reactors
-					.map(reactor => reactor.pressure())
-					.reduce((cur, acc) => acc += cur)
-					/ reactors.length;
-			}),
-			temperature: ko.computed(() => {
-				return reactors
-					.map(reactor => reactor.temperature())
-					.reduce((cur, acc) => acc += cur)
-					/ reactors.length;
-			}),
-			fullManual: ko.computed(() =>
-				this.reactors.every(reactor => !reactor.auto())
-			)
 		};
 
+		this.control.common.fullManual = ko.computed(() =>
+			this.control.reactors.every(reactor => !reactor.auto())
+		);
+
+		const info = reactors.map((reactor, index) => {
+			return {
+				index: 1 + index,
+				power: reactor.power(),
+				pressure: this._getPressure(reactor.power()),
+				temperature: this._getTemperature(reactor.power())
+			};
+		});
+		info.unshift({
+			index: 0,
+			power: 2000,
+			pressure: info
+				.map(reactor => reactor.pressure)
+				.reduce((cur, acc) => acc += +cur, 0)
+				/ info.length,
+			temperature: info
+				.map(reactor => reactor.temperature)
+				.reduce((cur, acc) => acc += +cur, 0)
+				/ info.length
+		});
+
+		this.info = info;
 		this.updatePowers = this.updatePowers;
 	}
 
@@ -64,12 +70,15 @@ class Station {
 	}
 
 	updatePowers() {
-		const manualReactors = this.reactors()
+		const reactors = this.control.reactors();
+		const common = this.control.common;
+
+		const manualReactors = reactors
 			.filter(reactor => !reactor.auto());
-		const availableReactors = this.reactors()
+		const availableReactors = reactors
 			.filter(reactor => reactor.auto());
 
-		let wholePower = this.common.power();
+		let wholePower = common.power();
 		const manualPower = manualReactors
 			.map(reactor => reactor.power())
 			.reduce((acc, cur) => acc += +cur, 0);
@@ -78,10 +87,10 @@ class Station {
 		autoPower = autoPower > 1000 ? 1000 : autoPower;
 		availableReactors.forEach(reactor => reactor.power(autoPower));
 
-		wholePower = this.reactors()
+		wholePower = reactors
 			.map(reactor => reactor.power())
 			.reduce((acc, cur) => acc += +cur, 0);
-		this.common.power(wholePower);
+		common.power(wholePower);
 	}
 }
 
