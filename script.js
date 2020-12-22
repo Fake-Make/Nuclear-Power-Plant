@@ -1,27 +1,3 @@
-// function updateValue(field) {
-// 	const value = field.value;
-// 	const fieldName = field.name;
-// 	const fieldsToChange = document.getElementsByName(fieldName);
-
-// 	for (let i = 0; fieldToChange = fieldsToChange[i]; i++) {
-// 		fieldToChange.value = value;
-// 	}
-// }
-
-function getPressure(power, maxPower = 1000) {
-	const powerPart = 64 * (power / maxPower);
-	const error = Math.random() * .5 - .25;
-
-	return 1 + powerPart + error;
-}
-
-function getTemperature(power, maxPower = 1000) {
-	const powerPart = 180 * (power / maxPower);
-	const error = Math.random() * 1.5 - .75;
-
-	return 100 + powerPart + error;
-}
-
 class Station {
 	constructor() {
 		const reactors = [1, 2, 3, 4].map(reactor => {
@@ -29,14 +5,14 @@ class Station {
 				index: ko.observable(reactor),
 				power: ko.observable(500),
 				auto: ko.observable(true),
-				pressure: getPressure(500),
-				temperature: getTemperature(500)
+				pressure: this._getPressure(500),
+				temperature: this._getTemperature(500)
 			}
 		});
 
 		reactors.forEach(reactor => {
-			reactor.pressure = ko.computed(() => getPressure(reactor.power()));
-			reactor.temperature = ko.computed(() => getTemperature(reactor.power()));
+			reactor.pressure = ko.computed(() => this._getPressure(reactor.power()));
+			reactor.temperature = ko.computed(() => this._getTemperature(reactor.power()));
 		})
 
 		this.reactors = reactors;
@@ -53,11 +29,60 @@ class Station {
 					.map(reactor => reactor.temperature())
 					.reduce((cur, acc) => acc += cur)
 					/ reactors.length;
-			})
+			}),
+			fullManual: ko.computed(() =>
+				this.reactors.every(reactor => !reactor.auto())
+			)
 		};
+
+		this.updatePowers = this.updatePowers;
+	}
+
+	_getPressure(power, maxPower = 1000) {
+		const powerPart = 64 * (power / maxPower);
+		const error = Math.random() * .5 - .25;
+	
+		return 1 + powerPart + error;
+	}
+
+	_getTemperature(power, maxPower = 1000) {
+		const powerPart = 180 * (power / maxPower);
+		const error = Math.random() * 1.5 - .75;
+	
+		return 100 + powerPart + error;
+	}
+
+	_updateValue(field) {
+		console.log(field, this)
+		const value = field.value;
+		const fieldName = field.name;
+		const fieldsToChange = document.getElementsByName(fieldName);
+	
+		for (let i = 0; fieldToChange = fieldsToChange[i]; i++) {
+			fieldToChange.value = value;
+		}
+	}
+
+	updatePowers() {
+		const manualReactors = this.reactors()
+			.filter(reactor => !reactor.auto());
+		const availableReactors = this.reactors()
+			.filter(reactor => reactor.auto());
+
+		let wholePower = this.common.power();
+		const manualPower = manualReactors
+			.map(reactor => reactor.power())
+			.reduce((acc, cur) => acc += +cur, 0);
+
+		let autoPower = Math.floor((wholePower - manualPower) / availableReactors.length);
+		autoPower = autoPower > 1000 ? 1000 : autoPower;
+		availableReactors.forEach(reactor => reactor.power(autoPower));
+
+		wholePower = this.reactors()
+			.map(reactor => reactor.power())
+			.reduce((acc, cur) => acc += +cur, 0);
+		this.common.power(wholePower);
 	}
 }
 
-(function() {
-	ko.applyBindings(ko.mapping.fromJS(new Station()));
-})();
+ko.applyBindings(ko.mapping.fromJS(new Station()));

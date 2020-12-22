@@ -15,30 +15,35 @@
 			<label>
 				Общая мощность:
 				<input type="number" min="0" max="4000" step="1" name="power-common"
-					data-bind="value: common.power">
+					data-bind="value: common.power, enable: !common.fullManual()">
 			</label>
 			<br>
 			<label>
 				0<input type="range" min="0" max="4000" step="1" name="power-common"
-					data-bind="value: common.power">4000
+					data-bind="value: common.power, enable: !common.fullManual(), event: {change: $root.updatePowers}">4000
 			</label>
 		</div>
 	
 		<br>
 		<br>
-		
+		<!-- ko if: console.log($root) -->
+		<!-- /ko -->
+
+
 		<!-- ko foreach: $root.reactors -->
 		<div>
 			<label>
-				<input type="checkbox" data-bind="checked: !$data.auto()">
+				<input type="checkbox" data-bind="checked: $data.auto" title="Автоматический режим">
 				<span data-bind="text: 'Реактор #' + ($index() + 1) +':'"></span>
 				<input type="number" min="0" max="1000" step="1"
-					data-bind="value: $data.power, name: 'power-reactor-' + $index()">
+					data-bind="value: $data.power, name: 'power-reactor-' + $index(),
+					enable: !$data.auto(), event: {change: $root.updatePowers.bind($root)}">
 			</label>
 			<br>
 			<label>
 				0<input type="range" min="0" max="1000" step="1"
-					data-bind="value: $data.power, name: 'power-reactor-' + $index()">1000
+					data-bind="value: $data.power, name: 'power-reactor-' + $index(),
+					enable: !$data.auto(), event: {change: $root.updatePowers.bind($root)}">1000
 			</label>
 		</div>
 		<!-- /ko -->
