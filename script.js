@@ -21,27 +21,28 @@ class Station {
 
 		const info = reactors.map((reactor, index) => {
 			return {
-				index: 1 + index,
-				power: reactor.power(),
-				pressure: this._getPressure(reactor.power()),
-				temperature: this._getTemperature(reactor.power())
+				index: ko.observable(1 + index),
+				power: ko.observable(reactor.power()),
+				pressure: ko.observable(this._getPressure(reactor.power())),
+				temperature: ko.observable(this._getTemperature(reactor.power()))
 			};
 		});
 		info.unshift({
-			index: 0,
-			power: 2000,
-			pressure: info
+			index: ko.observable(0),
+			power: ko.observable(2000),
+			pressure: ko.observable(info
 				.map(reactor => reactor.pressure)
 				.reduce((cur, acc) => acc += +cur, 0)
-				/ info.length,
-			temperature: info
+				/ info.length),
+			temperature: ko.observable(info
 				.map(reactor => reactor.temperature)
 				.reduce((cur, acc) => acc += +cur, 0)
-				/ info.length
+				/ info.length)
 		});
 
 		this.info = info;
 		this.updatePowers = this.updatePowers;
+		this._updateInfo();
 	}
 
 	_getPressure(power, maxPower = 1000) {
@@ -91,6 +92,46 @@ class Station {
 			.map(reactor => reactor.power())
 			.reduce((acc, cur) => acc += +cur, 0);
 		common.power(wholePower);
+	}
+
+	_updateInfo() {
+		setInterval(() => {
+			const reactors = this.info.slice(1);
+
+			reactors.forEach(reactor => {
+				const curPower = reactor.power();
+				const targetPower = this.control.reactors[reactor.index() - 1].power();
+
+				const absDiff = targetPower - curPower;
+				const multiplyer = Math.abs(absDiff) < 10 ? 1 : .2;
+
+				const resultPower = reactor.power() + absDiff * multiplyer;
+				const resultPressure = this._getPressure(resultPower);
+				const resultTemperature = this._getTemperature(resultPower);
+
+				reactor.power(resultPower);
+				reactor.pressure(resultPressure);
+				reactor.temperature(resultTemperature);
+			});
+
+			const average = this.info[0];
+			average.power(Math.floor(reactors
+				.map(reactor => reactor.power())
+				.reduce((acc, cur) => acc += +cur, 0)
+			));
+
+			average.pressure(reactors
+				.map(reactor => reactor.pressure())
+				.reduce((acc, cur) => acc += +cur, 0)
+				/ reactors.length
+			);
+
+			average.temperature(reactors
+				.map(reactor => reactor.temperature())
+				.reduce((acc, cur) => acc += +cur, 0)
+				/ reactors.length
+			);
+		}, 1000);
 	}
 }
 

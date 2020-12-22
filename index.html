@@ -67,7 +67,7 @@
 				<!-- ko foreach: info -->
 				<tr>
 					<td data-bind="text: index() ? index() : 'Станция'"></td>
-					<td data-bind="text: power() + ' МВт'"></td>
+					<td data-bind="text: Math.floor(power()) + ' МВт'"></td>
 					<td data-bind="text: pressure().toFixed(2) + ' атм'"></td>
 					<td data-bind="text: temperature().toFixed(2) + '°C'"></td>
 				</tr>
