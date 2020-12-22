@@ -1,0 +1,22 @@
+body {
+	font-family: sans-serif;
+	background-color: #333;
+	color: #eee;
+	display: flex;
+	width: 100%;
+	justify-content: space-around;
+	flex-wrap: wrap;
+}
+
+body section {
+	width: auto;
+}
+
+.control,
+.info {
+	width: 25%;
+}
+
+section.plot {
+	flex-grow: 1;
+}
