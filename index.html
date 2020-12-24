@@ -15,7 +15,7 @@
 		<h2>Панель управления</h2>
 		<div>
 			<label>
-				Общая мощность:
+				Общая мощность (МВт):
 				<input type="number" min="0" max="4000" step="1" name="power-common"
 					data-bind="value: control.common.power, enable: !control.common.fullManual()">
 			</label>
@@ -35,7 +35,7 @@
 		<div>
 			<label>
 				<input type="checkbox" data-bind="checked: $data.auto" title="Автоматический режим">
-				<span data-bind="text: 'Реактор #' + ($index() + 1) +':'"></span>
+				<span data-bind="text: 'Реактор #' + ($index() + 1) +' (МВт):'"></span>
 				<input type="number" min="0" max="1000" step="1"
 					data-bind="value: $data.power, name: 'power-reactor-' + $index(),
 					enable: !$data.auto(), event: {change: $root.control.common.updatePowers.bind($root.control.common)}">
