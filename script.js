@@ -22,13 +22,16 @@ class Station {
 		const info = reactors.map((reactor, index) => {
 			return {
 				index: ko.observable(1 + index),
+				name: 'Реактор ' + (1 + index),
 				power: ko.observable(reactor.power()),
 				pressure: ko.observable(this._getPressure(reactor.power())),
 				temperature: ko.observable(this._getTemperature(reactor.power()))
 			};
 		});
+
 		info.unshift({
 			index: ko.observable(0),
+			name: 'Станция',
 			power: ko.observable(2000),
 			pressure: ko.observable(info
 				.map(reactor => reactor.pressure)
@@ -41,6 +44,16 @@ class Station {
 		});
 
 		this.info = info;
+		this.plots = info.map(module => {
+			return {
+				x: [],
+				y: [],
+				mode: 'lines',
+				name: module.name,
+				line: {width: 3}
+			};
+		});
+
 		this.updatePowers = this.updatePowers;
 		this._updateInfo();
 	}
@@ -95,7 +108,21 @@ class Station {
 	}
 
 	_updateInfo() {
-		setInterval(() => {
+		const _addPoint = (points, pointX, pointY) => {
+			const maxPoints = 60;
+			const x = points.x;
+			const y = points.y;
+
+			if (x.length > maxPoints)
+				x.shift();
+			if (y.length > maxPoints)
+				y.shift();
+
+			x.push(pointX);
+			y.push(pointY);
+		};
+
+		const _calcaluteInfo = () => {
 			const reactors = this.info.slice(1);
 
 			reactors.forEach(reactor => {
@@ -131,6 +158,34 @@ class Station {
 				.reduce((acc, cur) => acc += +cur, 0)
 				/ reactors.length
 			);
+
+			let date = new Date(2020, 12, 30, 0, 0, seconds++);
+			date = date.toLocaleTimeString();
+
+			this.plots.forEach((plot, index) => {
+				_addPoint(plot, date, this.info[index].power());
+			});
+		}
+
+		const _drawPlot = () => {
+			Plotly.newPlot('plot', this.plots, {
+				title:'Статистика работы станции',
+				showlegend: true,
+				xaxis: {
+					title: 'Время'
+				},
+				yaxis: {
+					title: 'Мощность',
+					range: [0, 4000]
+				},
+				height: 400
+			});
+		};
+
+		let seconds = 0;
+		setInterval(() => {
+			_calcaluteInfo();
+			_drawPlot();
 		}, 1000);
 	}
 }

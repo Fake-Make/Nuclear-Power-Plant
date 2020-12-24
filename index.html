@@ -7,6 +7,7 @@
 	<script src="jquery.min.js"></script>
 	<script src="knockout.min.js"></script>
 	<script src="komapping.min.js"></script>
+	<script src="plotly.min.js"></script>
 	<title>Атомная станция</title>
 </head>
 <body>
@@ -27,9 +28,6 @@
 	
 		<br>
 		<br>
-		<!-- ko if: console.log($root) -->
-		<!-- /ko -->
-
 
 		<!-- ko foreach: $root.control.reactors -->
 		<div>
@@ -51,13 +49,14 @@
 	</section>
 	<section class="plot">
 		<h2>График</h2>
+		<div id="plot"></div>
 	</section>
 	<section class="info">
 		<h2>Информация</h2>
 		<table>
 			<thead>
 				<tr>
-					<th>Реактор</th>
+					<th width="80">Модуль</th>
 					<th>Мощность</th>
 					<th>Среднее давление</th>
 					<th>Средняя температура</th>
@@ -66,7 +65,7 @@
 			<tbody>
 				<!-- ko foreach: info -->
 				<tr>
-					<td data-bind="text: index() ? index() : 'Станция'"></td>
+					<td data-bind="text: name" width="80"></td>
 					<td data-bind="text: Math.floor(power()) + ' МВт'"></td>
 					<td data-bind="text: pressure().toFixed(2) + ' атм'"></td>
 					<td data-bind="text: temperature().toFixed(2) + '°C'"></td>
