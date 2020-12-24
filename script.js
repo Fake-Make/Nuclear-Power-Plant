@@ -99,6 +99,7 @@ class Station {
 
 		let autoPower = Math.floor((wholePower - manualPower) / availableReactors.length);
 		autoPower = autoPower > 1000 ? 1000 : autoPower;
+		autoPower = autoPower < 0 ? 0 : autoPower;
 		availableReactors.forEach(reactor => reactor.power(autoPower));
 
 		wholePower = reactors
@@ -109,7 +110,7 @@ class Station {
 
 	_updateInfo() {
 		const _addPoint = (points, pointX, pointY) => {
-			const maxPoints = 60;
+			const maxPoints = 180;
 			const x = points.x;
 			const y = points.y;
 
