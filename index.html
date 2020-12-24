@@ -21,8 +21,10 @@
 			</label>
 			<br>
 			<label>
-				0<input type="range" min="0" max="4000" step="1" name="power-common"
-					data-bind="value: control.common.power, enable: !control.common.fullManual(), event: {change: $root.control.common.updatePowers.bind($root.control.common)}">4000
+				<span data-bind="text: control.common.MIN_POWER"></span>
+				<input type="range" min="0" max="4000" step="1" name="power-common"
+					data-bind="value: control.common.power, enable: !control.common.fullManual(), event: {change: $root.control.common.updatePowers.bind($root.control.common)}">
+				<span data-bind="text: control.common.MAX_POWER"></span>
 			</label>
 		</div>
 	
@@ -40,9 +42,11 @@
 			</label>
 			<br>
 			<label>
-				0<input type="range" min="0" max="1000" step="1"
+				<span data-bind="text: $root.control.common.MIN_REACTOR_POWER"></span>
+				<input type="range" min="0" max="1000" step="1"
 					data-bind="value: $data.power, name: 'power-reactor-' + $index(),
-					enable: !$data.auto(), event: {change: $root.control.common.updatePowers.bind($root.control.common)}">1000
+					enable: !$data.auto(), event: {change: $root.control.common.updatePowers.bind($root.control.common)}">
+				<span data-bind="text: $root.control.common.MAX_REACTOR_POWER"></span>
 			</label>
 		</div>
 		<!-- /ko -->
@@ -74,6 +78,6 @@
 			</tbody>
 		</table>
 	</section>
-	<script src="scripts/script.js"></script>
+	<script src="scripts/main.js"></script>
 </body>
 </html>
